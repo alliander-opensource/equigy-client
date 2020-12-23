@@ -12,7 +12,7 @@ information on using pull requests.
 
 ## Community Guidelines
 
-This project follows the following [Code of Conduct](https://github.com/alliander-opensource/equigy-client/Code-of-conduct.md).
+This project follows the following [Code of Conduct](https://github.com/alliander-opensource/equigy-client/blob/master/CODE_OF_CONDUCT.md).
 
 ## Attribution
 
