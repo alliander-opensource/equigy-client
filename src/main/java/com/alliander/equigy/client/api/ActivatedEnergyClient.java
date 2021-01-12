@@ -12,10 +12,11 @@ import com.alliander.equigy.client.oauth.OAuthToken;
 import mjson.Json;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -31,29 +32,32 @@ public class ActivatedEnergyClient {
     }
 
     public List<ActivatedEnergy> getByQuery(EAN18 accountingPointId, LocalDate queryDate, String bearerToken) {
-        final HttpRequest httpRequest = HttpRequest.newBuilder(getByQueryUri(accountingPointId, queryDate))
-                .header("Authorization", "Bearer " + bearerToken)
-                .header("Accept", "application/json")
-                .GET()
-                .build();
-
         try {
-            final HttpResponse<String> httpResponse = HttpClient.newHttpClient()
-                    .send(httpRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            final HttpURLConnection connection = (HttpURLConnection) getByQueryUrl(accountingPointId, queryDate).openConnection();
+            connection.setRequestProperty("Authorization", "Bearer " + bearerToken);
+            connection.setRequestProperty("Accept", "application/json");
 
-            if (httpResponse.statusCode() != 200) {
-                throw new EquigyException("Unexpected HTTP status code: " + httpResponse.statusCode());
+            if (connection.getResponseCode() != 200) {
+                throw new EquigyException("Unexpected HTTP status code: " + connection.getResponseCode());
             } else {
-                final String contentType = httpResponse.headers().firstValue("Content-Type").orElseThrow(() -> new EquigyException("Content-Type header missing in response"));
-                if (!contentType.startsWith("application/json") || !contentType.contains("charset=utf-8")) {
+                final String contentType = connection.getHeaderField("Content-Type");
+                if (contentType == null || !contentType.startsWith("application/json") || !contentType.contains("charset=utf-8")) {
                     throw new EquigyException("Unexpected Content-Type in response: " + contentType);
                 }
             }
 
-            return Json.read(httpResponse.body()).asJsonList().stream()
+            final StringBuilder data = new StringBuilder();
+            try (final InputStreamReader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
+                final char[] buf = new char[1024];
+                for (int n = reader.read(buf); n > -1; n = reader.read(buf)) {
+                    data.append(buf, 0, n);
+                }
+            }
+
+            return Json.read(data.toString()).asJsonList().stream()
                     .map(ActivatedEnergy::new)
                     .collect(Collectors.toList());
-        } catch (IOException | InterruptedException | NullPointerException | Json.MalformedJsonException e) {
+        } catch (IOException | NullPointerException | Json.MalformedJsonException e) {
             throw new EquigyException(e);
         }
     }
@@ -68,12 +72,12 @@ public class ActivatedEnergyClient {
         return getByQuery(accountingPointId, queryDate, token.getAccessToken());
     }
 
-    private URI getByQueryUri(EAN18 accountingPointId, LocalDate queryDate) {
+    private URL getByQueryUrl(EAN18 accountingPointId, LocalDate queryDate) throws MalformedURLException {
         // Querystring parameters don't need encoding, since EAN18 and LocalDate only contain characters 0-9 and '-'
         return URI.create(baseUri.toString() + "/activatedEnergy/getByQuery"
                 + "?accountingPointId=" + accountingPointId.toString()
                 + "&queryDate=" + queryDate.toString()
-        );
+        ).normalize().toURL();
     }
 
     public static ActivatedEnergyClient acceptance() {

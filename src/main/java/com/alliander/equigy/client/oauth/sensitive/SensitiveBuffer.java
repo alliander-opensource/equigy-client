@@ -8,7 +8,6 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 package com.alliander.equigy.client.oauth.sensitive;
 
-import java.net.http.HttpRequest;
 import java.nio.ByteBuffer;
 import java.util.function.Function;
 
@@ -22,14 +21,6 @@ public class SensitiveBuffer {
     public SensitiveBuffer map(Function<ByteBuffer, ByteBuffer> mapper) {
         try {
             return new SensitiveBuffer(mapper.apply(buffer));
-        } finally {
-            clearByteBuffer(buffer);
-        }
-    }
-
-    public <T> T mapAsBodyPublisher(Function<HttpRequest.BodyPublisher, T> mapper) {
-        try {
-            return mapper.apply(new SensitiveBodyPublisher(buffer));
         } finally {
             clearByteBuffer(buffer);
         }

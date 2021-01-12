@@ -166,7 +166,7 @@ public class ActivatedEnergyClientTest {
     private String readTestFile(String filename) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         final InputStream stream = classLoader.getResourceAsStream(ActivatedEnergyClientTest.class.getPackageName().replaceAll("\\.", File.separator) + File.separator + filename);
-        return new Scanner(stream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
+        return new Scanner(stream).useDelimiter("\\A").next();
     }
 
     private static List<ActivatedEnergy> expectedActivatedEnergies() {

@@ -19,7 +19,7 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.List;
+import java.util.Arrays;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +51,7 @@ public class OAuthClientTest {
         expectedToken.setAccessToken("accessMe");
         expectedToken.setRefreshToken("refreshMe");
         expectedToken.setIdToken("thisIsMe");
-        expectedToken.setScope(List.of("scope1", "scope2"));
+        expectedToken.setScope(Arrays.asList("scope1", "scope2"));
         expectedToken.setTokenType("Bearer");
         expectedToken.setExpires(OffsetDateTime.parse("2020-12-01T15:00:00+01:00").toInstant());
         assertThat(actualToken).isEqualTo(expectedToken);

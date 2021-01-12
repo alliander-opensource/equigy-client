@@ -12,10 +12,12 @@ import com.alliander.equigy.client.oauth.sensitive.SensitiveOperations;
 import mjson.Json;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
@@ -40,40 +42,47 @@ public class OAuthClient {
         final String basicAuthorizationHeader = SensitiveOperations.createBasicAuthorizationHeader(credentials)
                 .unsafeMap(header -> StandardCharsets.UTF_8.decode(header).toString());
 
-        final HttpResponse<String> httpResponse = SensitiveOperations.createPasswordGrantTokenRequest(credentials)
-                .mapAsBodyPublisher(tokenRequest -> {
-                    final HttpRequest httpRequest = HttpRequest.newBuilder(tokenUriFor(credentials))
-                            .header("Authorization", basicAuthorizationHeader)
-                            .header("Content-Type", "application/json; charset=utf-8")
-                            .POST(tokenRequest)
-                            .build();
-
+        return SensitiveOperations.createPasswordGrantTokenRequest(credentials)
+                .unsafeMap(tokenRequest -> {
                     try {
-                        return HttpClient.newHttpClient()
-                                .send(httpRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-                    } catch (IOException | InterruptedException e) {
+                        final HttpURLConnection connection = (HttpURLConnection) tokenUrlFor(credentials).openConnection();
+                        connection.setRequestMethod("POST");
+                        connection.setDoOutput(true);
+                        connection.setFixedLengthStreamingMode(tokenRequest.remaining());
+                        connection.setRequestProperty("Authorization", basicAuthorizationHeader);
+                        connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+
+                        try (final OutputStream outputStream = connection.getOutputStream()) {
+                            outputStream.write(tokenRequest.array(), 0, tokenRequest.remaining());
+                            outputStream.flush();
+                        }
+
+                        if (connection.getResponseCode() != 200) {
+                            throw new OAuthException("Unexpected HTTP status code: " + connection.getResponseCode());
+                        } else {
+                            final String contentType = connection.getHeaderField("Content-Type");
+                            if (contentType == null || !contentType.startsWith("application/json") || !contentType.contains("charset=utf-8")) {
+                                throw new OAuthException("Unexpected Content-Type in response: " + contentType);
+                            }
+                        }
+
+                        final StringBuilder data = new StringBuilder();
+                        try (final InputStreamReader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
+                            final char[] buf = new char[1024];
+                            for (int n = reader.read(buf); n > -1; n = reader.read(buf)) {
+                                data.append(buf, 0, n);
+                            }
+                        }
+
+                        return new OAuthToken(Json.read(data.toString()), retrievedAt);
+                    } catch (IOException | Json.MalformedJsonException e) {
                         throw new OAuthException(e);
                     }
                 });
-
-        if (httpResponse.statusCode() != 200) {
-            throw new OAuthException("Unexpected HTTP status code: " + httpResponse.statusCode());
-        } else {
-            final String contentType = httpResponse.headers().firstValue("Content-Type").orElseThrow(() -> new OAuthException("Content-Type header missing in response"));
-            if (!contentType.startsWith("application/json") || !contentType.contains("charset=utf-8")) {
-                throw new OAuthException("Unexpected Content-Type in response: " + contentType);
-            }
-        }
-
-        try {
-            return new OAuthToken(Json.read(httpResponse.body()), retrievedAt);
-        } catch (Json.MalformedJsonException e) {
-            throw new OAuthException(e);
-        }
     }
 
-    private URI tokenUriFor(EquigyCredentials credentials) {
-        return URI.create(baseUri.toString() + "/" + credentials.getTenantId().toString() + "/token");
+    private URL tokenUrlFor(EquigyCredentials credentials) throws MalformedURLException {
+        return URI.create(baseUri.toString() + "/" + credentials.getTenantId().toString() + "/token").normalize().toURL();
     }
 
 }

@@ -10,7 +10,6 @@ package com.alliander.equigy.client.oauth.sensitive;
 
 import org.junit.Test;
 
-import java.net.http.HttpRequest;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Flow;
 
@@ -53,31 +52,6 @@ public class SensitiveBufferTest {
         new SensitiveBuffer(in).map(b -> ByteBuffer.allocate(1).put((byte) (b.get() + 4)));
 
         assertThat(in.get(0)).isEqualTo((byte) 0);
-    }
-
-    @Test
-    public void whenMappedAsBodyPublisherThenBodyPublisherHasContentLength() {
-        final ByteBuffer in = ByteBuffer.allocate(1).put((byte) 150).flip();
-
-        final long contentLength = new SensitiveBuffer(in).mapAsBodyPublisher(HttpRequest.BodyPublisher::contentLength);
-
-        assertThat(contentLength).isEqualTo(1);
-    }
-
-    @Test
-    public void whenMappedAsBodyPublisherThenMapperValueIsReturned() {
-        final ByteBuffer in = ByteBuffer.allocate(1).put((byte) 150).flip();
-
-        final byte out = new SensitiveBuffer(in).mapAsBodyPublisher(bp -> {
-            final MockSubscriber subscriber = new MockSubscriber();
-            bp.subscribe(subscriber);
-
-            assertThat(subscriber.completed).isTrue();
-            assertThat(subscriber.throwable).isNull();
-            return subscriber.item.get();
-        });
-
-        assertThat(out).isEqualTo((byte) 150);
     }
 
     class MockSubscriber implements Flow.Subscriber<ByteBuffer> {
