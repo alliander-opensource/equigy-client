@@ -11,7 +11,6 @@ package com.alliander.equigy.client.oauth.sensitive;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.Flow;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,31 +51,5 @@ public class SensitiveBufferTest {
         new SensitiveBuffer(in).map(b -> ByteBuffer.allocate(1).put((byte) (b.get() + 4)));
 
         assertThat(in.get(0)).isEqualTo((byte) 0);
-    }
-
-    class MockSubscriber implements Flow.Subscriber<ByteBuffer> {
-        ByteBuffer item;
-        Throwable throwable;
-        boolean completed;
-
-        @Override
-        public void onSubscribe(Flow.Subscription subscription) {
-            subscription.request(1);
-        }
-
-        @Override
-        public void onNext(ByteBuffer item) {
-            this.item = item;
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            this.throwable = throwable;
-        }
-
-        @Override
-        public void onComplete() {
-            completed = true;
-        }
     }
 }
