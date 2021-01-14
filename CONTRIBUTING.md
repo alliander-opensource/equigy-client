@@ -10,6 +10,14 @@ use GitHub pull requests for this purpose. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
 information on using pull requests.
 
+## Design criteria
+
+The library is designed to be compatible with Java 8 and up.
+
+This library has been designed to have only minimal dependencies, in order to
+be very light-weight while still being compatible with the widest range of
+application frameworks, like Java EE or Spring Boot.
+
 ## OAuth credentials handling
 
 To keep the risk of leaking sensitive credential information, the organisation
@@ -25,12 +33,6 @@ in a base64 encoded state, which might end up in a memory dump. Care has been
 taken to make sure the value of the password field doesn't end up in any
 object that lives in memory for longer than the duration of the OAuth token
 request.
-
-## Dependencies
-
-This library has been designed to have only minimal dependencies, in order to
-be very light-weight while still being compatible with the widest range of
-application frameworks, like Java EE or Spring Boot.
 
 ## Community Guidelines
 
