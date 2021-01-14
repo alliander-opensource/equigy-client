@@ -30,13 +30,13 @@ public final class SensitiveOperations {
     public static SensitiveBuffer createBasicAuthorizationHeader(EquigyCredentials credentials) {
         final ByteBuffer clientId = wrapAndEncode(credentials.getOrganizationClientId().toString());
         return wrapAndEncode(credentials.getOrganizationClientSecret())
-                .map(clientSecret -> ByteBuffer.allocate(clientId.remaining() + clientSecret.remaining() + 1)
+                .map(clientSecret -> (ByteBuffer) ByteBuffer.allocate(clientId.remaining() + clientSecret.remaining() + 1)
                         .put(clientId)
                         .put((byte) ':')
                         .put(clientSecret)
                         .flip())
                 .map(basicCredential -> Base64.getEncoder().encode(basicCredential))
-                .map(encodedAuthorization -> ByteBuffer.allocate(encodedAuthorization.remaining() + BASIC_PREFIX.length)
+                .map(encodedAuthorization -> (ByteBuffer) ByteBuffer.allocate(encodedAuthorization.remaining() + BASIC_PREFIX.length)
                         .put(BASIC_PREFIX)
                         .put(encodedAuthorization)
                         .flip());
@@ -46,7 +46,7 @@ public final class SensitiveOperations {
         final ByteBuffer username = escapeAsJsonString(wrapAndEncode(credentials.getUsername()));
         return wrapAndEncode(credentials.getPassword())
                 .map(SensitiveOperations::escapeAsJsonString)
-                .map(password -> ByteBuffer.allocate(username.remaining() + password.remaining() + GRANT_PREFIX.length + GRANT_INFIX.length + GRANT_SUFFIX.length)
+                .map(password -> (ByteBuffer) ByteBuffer.allocate(username.remaining() + password.remaining() + GRANT_PREFIX.length + GRANT_INFIX.length + GRANT_SUFFIX.length)
                         .put(GRANT_PREFIX)
                         .put(username)
                         .put(GRANT_INFIX)
@@ -72,6 +72,6 @@ public final class SensitiveOperations {
             }
             out.put(b);
         }
-        return out.flip();
+        return (ByteBuffer) out.flip();
     }
 }

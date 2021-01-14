@@ -18,7 +18,7 @@ public class SensitiveBufferTest {
 
     @Test
     public void whenUnsafeMappedThenMapperValueIsReturned() {
-        final ByteBuffer in = ByteBuffer.allocate(1).put((byte) 20).flip();
+        final ByteBuffer in = (ByteBuffer) ByteBuffer.allocate(1).put((byte) 20).flip();
 
         final int out = new SensitiveBuffer(in).unsafeMap(b -> b.get() + 4);
 
@@ -27,7 +27,7 @@ public class SensitiveBufferTest {
 
     @Test
     public void whenUnsafeMappedThenInputByteBufferIsCleared() {
-        final ByteBuffer in = ByteBuffer.allocate(1).put((byte) 20).flip();
+        final ByteBuffer in = (ByteBuffer) ByteBuffer.allocate(1).put((byte) 20).flip();
 
         new SensitiveBuffer(in).unsafeMap(b -> b.get() + 4);
 
@@ -36,9 +36,9 @@ public class SensitiveBufferTest {
 
     @Test
     public void whenMappedThenMapperValueIsReturned() {
-        final ByteBuffer in = ByteBuffer.allocate(1).put((byte) 70).flip();
+        final ByteBuffer in = (ByteBuffer) ByteBuffer.allocate(1).put((byte) 70).flip();
 
-        final byte out = new SensitiveBuffer(in).map(b -> ByteBuffer.allocate(1).put((byte) (b.get() + 4)).flip())
+        final byte out = new SensitiveBuffer(in).map(b -> (ByteBuffer) ByteBuffer.allocate(1).put((byte) (b.get() + 4)).flip())
                 .unsafeMap(ByteBuffer::get);
 
         assertThat(out).isEqualTo((byte) 74);
@@ -46,7 +46,7 @@ public class SensitiveBufferTest {
 
     @Test
     public void whenMappedThenInputByteBufferIsCleared() {
-        final ByteBuffer in = ByteBuffer.allocate(1).put((byte) 70).flip();
+        final ByteBuffer in = (ByteBuffer) ByteBuffer.allocate(1).put((byte) 70).flip();
 
         new SensitiveBuffer(in).map(b -> ByteBuffer.allocate(1).put((byte) (b.get() + 4)));
 
