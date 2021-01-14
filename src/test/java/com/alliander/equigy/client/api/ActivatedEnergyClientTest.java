@@ -19,16 +19,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -73,7 +77,7 @@ public class ActivatedEnergyClientTest {
         oAuthToken.setAccessToken(ACCESS_TOKEN);
         oAuthToken.setRefreshToken("refreshMe");
         oAuthToken.setIdToken("thisIsMe");
-        oAuthToken.setScope(List.of("scope1", "scope2"));
+        oAuthToken.setScope(Arrays.asList("scope1", "scope2"));
         oAuthToken.setTokenType("Bearer");
         oAuthToken.setExpires(OffsetDateTime.now().plusMinutes(5).toInstant());
 
@@ -88,7 +92,7 @@ public class ActivatedEnergyClientTest {
         oAuthToken.setAccessToken(ACCESS_TOKEN);
         oAuthToken.setRefreshToken("refreshMe");
         oAuthToken.setIdToken("thisIsMe");
-        oAuthToken.setScope(List.of("scope1", "scope2"));
+        oAuthToken.setScope(Arrays.asList("scope1", "scope2"));
         oAuthToken.setTokenType("Unknown");
         oAuthToken.setExpires(OffsetDateTime.now().plusMinutes(5).toInstant());
 
@@ -103,7 +107,7 @@ public class ActivatedEnergyClientTest {
         oAuthToken.setAccessToken(ACCESS_TOKEN);
         oAuthToken.setRefreshToken("refreshMe");
         oAuthToken.setIdToken("thisIsMe");
-        oAuthToken.setScope(List.of("scope1", "scope2"));
+        oAuthToken.setScope(Arrays.asList("scope1", "scope2"));
         oAuthToken.setTokenType("Bearer");
         oAuthToken.setExpires(OffsetDateTime.now().minusMinutes(5).toInstant());
 
