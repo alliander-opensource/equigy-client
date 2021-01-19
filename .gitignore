@@ -1,0 +1,17 @@
+.gradle
+/build/
+/out/
+/bin/
+
+*.log
+.DS_Store
+
+## Keep ###
+!gradle/wrapper/gradle-wrapper.jar
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
