@@ -21,6 +21,10 @@ final List<ActivatedEnergy> activatedEnergies = activatedEnergyClient.getByQuery
 );
 ```
 
+## Building
+
+To build the library, just run `./gradlew clean build` or `gradlew.bat clean build`.
+
 ## Contributing
 
 To contribute to this project, please read [Contributing](https://github.com/alliander-opensource/equigy-client/blob/master/CONTRIBUTING.md).
