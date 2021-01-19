@@ -178,7 +178,7 @@ public class ActivatedEnergyClientTest {
                 new ActivatedEnergy(
                         Collections.singletonList(
                                 new ActivationTimeSeries(
-                                        "up",
+                                        ActivationDirection.UPWARD,
                                         new EAN18(TEST_EAN18),
                                         Collections.singletonList(
                                                 new ActivationSeriesPeriod(
@@ -188,7 +188,11 @@ public class ActivatedEnergyClientTest {
                                                         ),
                                                         Duration.ofMinutes(5),
                                                         Collections.singletonList(
-                                                                new ActivationPoint(10, 5)
+                                                                new ActivationPoint(
+                                                                        10,
+                                                                        OffsetDateTime.of(2020, 12, 20, 23, 45, 0, 0, ZoneOffset.UTC).toInstant(),
+                                                                        5.7d
+                                                                )
                                                         )
                                                 )
                                         )

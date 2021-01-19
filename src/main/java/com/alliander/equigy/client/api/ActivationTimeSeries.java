@@ -15,32 +15,32 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ActivationTimeSeries {
-    private String direction;
+    private ActivationDirection direction;
     private EAN18 accountingPointId;
     private List<ActivationSeriesPeriod> seriesPeriod;
 
     public ActivationTimeSeries() {
     }
 
-    public ActivationTimeSeries(String direction, EAN18 accountingPointId, List<ActivationSeriesPeriod> seriesPeriod) {
+    public ActivationTimeSeries(ActivationDirection direction, EAN18 accountingPointId, List<ActivationSeriesPeriod> seriesPeriod) {
         this.direction = direction;
         this.accountingPointId = accountingPointId;
         this.seriesPeriod = seriesPeriod;
     }
 
     public ActivationTimeSeries(Json json) {
-        direction = json.at("direction").asString();
+        direction = ActivationDirection.forJson(json.at("direction").asString());
         accountingPointId = new EAN18(json.at("accountingPointId").asString());
         seriesPeriod = json.at("seriesPeriod").asJsonList().stream()
                 .map(ActivationSeriesPeriod::new)
                 .collect(Collectors.toList());
     }
 
-    public String getDirection() {
+    public ActivationDirection getDirection() {
         return direction;
     }
 
-    public void setDirection(String direction) {
+    public void setDirection(ActivationDirection direction) {
         this.direction = direction;
     }
 

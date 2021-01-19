@@ -1,1 +1,1 @@
-[{"timeSeries":[{"accountingPointId":"130539057492609625","direction":"up","seriesPeriod":[{"resolution":"PT5M","interval":{"startDateTime":"1608505200000","endDateTime":"1608591600000"},"point":[{"position":"10","quantity":"5"}]}]}]}]
+[{"timeSeries":[{"accountingPointId":"130539057492609625","direction":"A01","seriesPeriod":[{"resolution":"PT5M","interval":{"startDateTime":"1608505200000","endDateTime":"1608591600000"},"point":[{"position":"10","quantity":"5.700"}]}]}]}]

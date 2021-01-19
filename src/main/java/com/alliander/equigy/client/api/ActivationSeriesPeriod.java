@@ -33,7 +33,7 @@ public class ActivationSeriesPeriod {
         interval = new DateTimePeriod(json.at("interval"));
         resolution = Duration.parse(json.at("resolution").asString());
         point = json.at("point").asJsonList().stream()
-                .map(ActivationPoint::new)
+                .map(pointJson -> new ActivationPoint(pointJson, interval.getStartDateTime(), resolution))
                 .collect(Collectors.toList());
     }
 

@@ -10,23 +10,28 @@ package com.alliander.equigy.client.api;
 
 import mjson.Json;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
 
 public class ActivationPoint {
     private int position;
-    private int quantity;
+    private Instant instant;
+    private double quantityInKwh;
 
     public ActivationPoint() {
     }
 
-    public ActivationPoint(int position, int quantity) {
+    public ActivationPoint(int position, Instant instant, double quantityInKwh) {
         this.position = position;
-        this.quantity = quantity;
+        this.instant = instant;
+        this.quantityInKwh = quantityInKwh;
     }
 
-    public ActivationPoint(Json json) {
+    public ActivationPoint(Json json, Instant offset, Duration resolution) {
         position = json.at("position").asInteger();
-        quantity = json.at("quantity").asInteger();
+        instant = offset.plus(resolution.multipliedBy(position - 1));
+        quantityInKwh = json.at("quantity").asDouble();
     }
 
     public int getPosition() {
@@ -37,12 +42,20 @@ public class ActivationPoint {
         this.position = position;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public Instant getInstant() {
+        return instant;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setInstant(Instant instant) {
+        this.instant = instant;
+    }
+
+    public double getQuantityInKwh() {
+        return quantityInKwh;
+    }
+
+    public void setQuantityInKwh(double quantityInKwh) {
+        this.quantityInKwh = quantityInKwh;
     }
 
     @Override
@@ -51,19 +64,21 @@ public class ActivationPoint {
         if (o == null || getClass() != o.getClass()) return false;
         ActivationPoint that = (ActivationPoint) o;
         return position == that.position &&
-                quantity == that.quantity;
+                Double.compare(that.quantityInKwh, quantityInKwh) == 0 &&
+                Objects.equals(instant, that.instant);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, quantity);
+        return Objects.hash(position, instant, quantityInKwh);
     }
 
     @Override
     public String toString() {
         return "ActivationPoint{" +
                 "position=" + position +
-                ", quantity=" + quantity +
+                ", instant=" + instant +
+                ", quantityInKwh=" + quantityInKwh +
                 '}';
     }
 }
