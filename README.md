@@ -25,7 +25,12 @@ final List<ActivatedEnergy> activatedEnergies = activatedEnergyClient.getByQuery
 
 To build the library, just run `./gradlew clean build` or `gradlew.bat clean build`.
 
-## Contributing
+# License
+This project is licensed under the Mozilla Public License, version 2.0 - see [LICENSE](LICENSE) for details.
 
-To contribute to this project, please read [Contributing](https://github.com/alliander-opensource/equigy-client/blob/master/CONTRIBUTING.md).
+# Contributing
+Please read [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) and [CONTRIBUTING](CONTRIBUTING.md) for details on the process 
+for submitting pull requests to us.
 
+# Contact
+Please read [SUPPORT](SUPPORT.md) for how to connect and get into contact with the Equigy-client project.
