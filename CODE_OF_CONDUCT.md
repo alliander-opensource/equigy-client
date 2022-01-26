@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2022 Contributors to the Equigy-client project 
+
+SPDX-License-Identifier: MPL-2.0
+-->
+
 # Code of Conduct
 
 ## Our Pledge
