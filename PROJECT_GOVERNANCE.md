@@ -22,7 +22,7 @@ Maintainers are responsible for maintaining parts of the code-base. Maintainers 
 1. In case of long discussions or arguments, maintainers or other can request a community council decision.
 
 The current maintainers of this project are:
-1. Mark van Cuijk
+1. Hans Lemkes
 
 Any community member or Contributor can ask a question or raise an issue to the maintainers by logging a GitHub issue.
 
